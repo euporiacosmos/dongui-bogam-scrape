@@ -1,5 +1,4 @@
 let b_level;
-let file_path;
 
 var scrape_flag; // 0일 때만 스크래핑
 var str;
@@ -18,15 +17,17 @@ var e_count = 0;
 var e_count_store = 0; // E 레벨 컨텐츠 목차의 개수를 저장
 var z_level_is_s = false;
 var s_level_is_smaller = false;
+var z_level_is_s_force = false; // 강제 set 여부
+var s_level_is_smaller_force = false; // 강제 set 여부
 
 function remove_span_tag(str) {
     return str.replace(/<span[^>]*>/g, "(").replace(/<\/span>/g, ")");
 }
-export function init(b_level_, file_path_, str_) {
+export function init(b_level_, str_) {
     b_level = b_level_;
-    file_path = file_path_;
     str = str_;
     scrape_flag = 0;
+    q_b = 0;
 }
 export function add_str_to_str(str_) { // 이 함수는 연결을 확인할 때만 사용하기
     str += str_;
@@ -39,6 +40,17 @@ export function decrease_scrape_flag() {
 }
 export function get_scrape_flag() {
     return scrape_flag;
+}
+export function force_set_z_level_is_s() { 
+    /** 외형편 권03-가슴-칠정으로 심통이 생기고, 식적ㆍ담음ㆍ어혈로 위완통이 생긴다
+     *  
+    */
+    z_level_is_s = true;
+    z_level_is_s_force = true;
+}
+export function force_set_s_level_is_smaller() {
+    s_level_is_smaller = true;
+    s_level_is_smaller_force = true;
 }
 export function parse_statement(j, response) {
     if (response.data.length != 0) {
@@ -59,7 +71,7 @@ export function parse_statement(j, response) {
                         d_count_store = d_count;
                         d_count = 0;
                     }
-                    if (j > 0 && response.data[j-1].content_level == 'Z') {
+                    if (j>0 && response.data[j-1].content_level == 'Z') {
                         z_level_is_s = true;
                     }
                     break;
@@ -93,7 +105,11 @@ export function parse_statement(j, response) {
                     }
                     break;
                 case 'S': // 더 이상 하위 목차가 없을 때의 본문
-                    if (s_level_is_smaller) { // D 레벨 컨텐츠 하위 본문
+                    if (s_level_is_smaller) { // E 레벨 컨텐츠 하위 본문
+                        if (s_level_is_smaller_force) {
+                            str += d_level[q_d++];
+                            s_level_is_smaller_force = false;
+                        }
                         if (j == 0) {
                             str += e_level[q_e++];
                         }
@@ -101,7 +117,7 @@ export function parse_statement(j, response) {
                             scrape_flag = j;
                         }
                         str += "\t\t\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
-                    } else { // E 레벨 컨텐츠 하위 본문
+                    } else { // D 레벨 컨텐츠 하위 본문
                         if (j == 0) {
                             str += d_level[q_d++];
                         }
@@ -113,6 +129,10 @@ export function parse_statement(j, response) {
                     break;
                 case 'Z': // 추가로 하위 목차가 있을 때의 본문
                     if (z_level_is_s) { // D 레벨 컨텐츠 하위 본문, E 레벨 컨텐츠들 최상단 설명 본문
+                        if (z_level_is_s_force) {
+                            str += c_level[q_c++];
+                            z_level_is_s_force = false;
+                        }
                         if (j == 0) {
                             str += d_level[q_d++];
                         }
@@ -142,4 +162,5 @@ export function parse_statement(j, response) {
             s_level_is_smaller = false;
         }
     }
+    setTimeout(() => {}, 300); // 서버가 계속 터져서 임의로 추가
 }
