@@ -17,8 +17,9 @@ var e_count = 0;
 var e_count_store = 0; // E 레벨 컨텐츠 목차의 개수를 저장
 var z_level_is_s = false;
 var s_level_is_smaller = false;
-var z_level_is_s_force = false; // 강제 set 여부
-var s_level_is_smaller_force = false; // 강제 set 여부
+var c_level_skip = false; // 이 변수는 z_level_is_s를 강제로 true로 만들면 저절로 true가 된다
+var d_level_skip = false; // 이 변수는 z_level_is_s를 강제로 true로 만들면 저절로 true가 된다
+var skip_z = false;
 
 function remove_span_tag(str) {
     return str.replace(/<span[^>]*>/g, "(").replace(/<\/span>/g, ")");
@@ -43,14 +44,27 @@ export function get_scrape_flag() {
 }
 export function force_set_z_level_is_s() { 
     /** 외형편 권03-가슴-칠정으로 심통이 생기고, 식적ㆍ담음ㆍ어혈로 위완통이 생긴다
-     *  
+     *  잡병편 권05-해수(咳嗽)-마두령(쥐방울덩굴의 열매)
     */
     z_level_is_s = true;
-    z_level_is_s_force = true;
+    c_level_skip = true;
+}
+export function force_unset_c_level_skip() {
+    // 잡병편 권05-해수(咳嗽)-침구법-마두령(쥐방울덩굴의 열매)
+    c_level_skip = false;
 }
 export function force_set_s_level_is_smaller() {
+    /** 잡병편 권08-제창(諸瘡)-나력-뿌리거나 붙이는 약-잠견산
+     */
     s_level_is_smaller = true;
-    s_level_is_smaller_force = true;
+    d_level_skip = true;
+}
+export function force_unset_d_level_skip() {
+    // 잡병편 권08-제창(諸瘡)-나력-뿌리거나 붙이는 약-잠견산
+    d_level_skip = false;
+}
+export function set_skip_z() {
+    skip_z = true;
 }
 export function parse_statement(j, response) {
     if (response.data.length != 0) {
@@ -106,9 +120,9 @@ export function parse_statement(j, response) {
                     break;
                 case 'S': // 더 이상 하위 목차가 없을 때의 본문
                     if (s_level_is_smaller) { // E 레벨 컨텐츠 하위 본문
-                        if (s_level_is_smaller_force) {
+                        if (d_level_skip) { // s_level_is_smaller를 강제로 true로 설정 시 새로운 D 레벨 컨텐츠를 진입하는지
                             str += d_level[q_d++];
-                            s_level_is_smaller_force = false;
+                            d_level_skip = false;
                         }
                         if (j == 0) {
                             str += e_level[q_e++];
@@ -127,11 +141,11 @@ export function parse_statement(j, response) {
                         str += "\t\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
                     }
                     break;
-                case 'Z': // 추가로 하위 목차가 있을 때의 본문
+                case 'Z': // 추가로 하위 목차가 있을 때의 본문, 그러나 C 레벨 컨텐츠 하위 본문일 때는 하위 목차가 없다
                     if (z_level_is_s) { // D 레벨 컨텐츠 하위 본문, E 레벨 컨텐츠들 최상단 설명 본문
-                        if (z_level_is_s_force) {
+                        if (c_level_skip) { // z_level_is_s를 강제로 true로 설정 시 새로운 C 레벨 컨텐츠를 진입하는지
                             str += c_level[q_c++];
-                            z_level_is_s_force = false;
+                            c_level_skip = false;
                         }
                         if (j == 0) {
                             str += d_level[q_d++];
@@ -142,7 +156,13 @@ export function parse_statement(j, response) {
                         str += "\t\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
                     } else { // C 레벨 컨텐츠 하위 본문, D 레벨 컨텐츠들 최상단 설명 본문
                         if (j == 0) {
-                            str += c_level[q_c++];
+                            if (!skip_z) str += c_level[q_c++];
+                            else {
+                                str += c_level[q_c++];
+                                str += c_level[q_c++];
+
+                                skip_z = false;
+                            }
                         }
                         if (j == response.data.length - 1) {
                             scrape_flag = j;
@@ -162,5 +182,4 @@ export function parse_statement(j, response) {
             s_level_is_smaller = false;
         }
     }
-    setTimeout(() => {}, 300); // 서버가 계속 터져서 임의로 추가
 }
