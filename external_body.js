@@ -85,9 +85,6 @@ async function external_body(i_, book_number) {
         }
         fs.writeFileSync(file_path, common.get_str(), 'utf8');
     } catch (error) {
-        console.log("서버 터짐. 10초간 스크래핑 중단...")
-        const wakeUpTime = Date.now() + 10000;
-        while (Date.now() < wakeUpTime) {};
         external_body(i_, book_number_);
     }
 }

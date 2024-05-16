@@ -171,7 +171,7 @@ async function various_illness(i_, book_number) {
                 common.init(["제상(諸傷)", "해독(解毒)", "구급(救急)", "괴질(怪疾)", "잡방(雜方)"], str);
                 for (var i = i_; i <= 1243; i++) {
                     let response;
-                    if (i == 312 || i == 387 || i == 941 || i == 1040) common.force_set_z_level_is_s();
+                    if (i == 312 || i == 387 || i == 941 || i == 1040 || i == 1243) common.force_set_z_level_is_s();
                     if ((i >= 319 && i <= 358) // 제상(諸傷)-여러 가지 짐승에 상한 것
                         || (i >= 375 && i <= 383) // 제상(諸傷)-단방
                         || (i >= 409 && i <= 462) // 제상(諸傷)-여러 가지 벌레에 상한 것
@@ -234,9 +234,6 @@ async function various_illness(i_, book_number) {
         }
         fs.writeFileSync(file_path, common.get_str(), 'utf8');
     } catch (error) {
-        console.log("서버 터짐. 10초간 스크래핑 중단...")
-        const wakeUpTime = Date.now() + 10000;
-        while (Date.now() < wakeUpTime) {}
         various_illness(i_, book_number_);
     }
 }
