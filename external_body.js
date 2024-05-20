@@ -52,7 +52,11 @@ async function external_body(i_, book_number) {
                 common.init(["가슴", "젖가슴", "배", "배꼽", "허리", "옆구리", "피부", "육", "맥", "근", "뼈"], str);
                 for (var i = i_; i <= 1924; i++) {
                     let response;
-                    if (i == 169) common.force_set_z_level_is_s();
+                    if (i == 169 || i == 1747) common.force_set_z_level_is_s();
+                    if (i >= 1750 && i <= 1780) {
+                        common.force_set_z_level_is_s();
+                        common.force_unset_c_level_skip();
+                    }
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/7/content?up_content_seq=" + i)
                         console.log("https://mediclassics.kr/books/8/volume/7/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/1924");
@@ -71,6 +75,7 @@ async function external_body(i_, book_number) {
                 common.init(["팔", "다리", "모발", "전음", "후음"], str);
                 for (var i = i_; i <= 1431; i++) {
                     let response;
+                    if (i == 2) common.force_unset_z_level_is_s();
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/8/content?up_content_seq=" + i)
                         console.log("https://mediclassics.kr/books/8/volume/8/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/1431");

@@ -2,7 +2,7 @@ import * as common from "./common.js";
 import axios from "axios";
 import fs from "fs";
 
-const file_path = "./herbs.txt";
+const file_path = "./Herbs.txt";
 var str;
 var book_number_;
 

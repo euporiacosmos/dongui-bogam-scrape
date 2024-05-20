@@ -171,7 +171,7 @@ async function various_illness(i_, book_number) {
                 common.init(["제상(諸傷)", "해독(解毒)", "구급(救急)", "괴질(怪疾)", "잡방(雜方)"], str);
                 for (var i = i_; i <= 1243; i++) {
                     let response;
-                    if (i == 312 || i == 387 || i == 941 || i == 1040 || i == 1243) common.force_set_z_level_is_s();
+                    if (i == 312 || i == 387 || i == 941 || i == 1040) common.force_set_z_level_is_s();
                     if ((i >= 319 && i <= 358) // 제상(諸傷)-여러 가지 짐승에 상한 것
                         || (i >= 375 && i <= 383) // 제상(諸傷)-단방
                         || (i >= 409 && i <= 462) // 제상(諸傷)-여러 가지 벌레에 상한 것
@@ -200,6 +200,10 @@ async function various_illness(i_, book_number) {
                 common.init(["부인(婦人)"], str);
                 for (var i = i_; i <= 1183; i++) {
                     let response;
+                    if ((i >= 1019 && i <= 1058) || (i >= 1003 && i <= 1015)) {
+                        common.force_set_z_level_is_s();
+                        common.force_unset_c_level_skip();
+                    }
                     i_ = i;
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/18/content?up_content_seq=" + i)

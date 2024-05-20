@@ -51,6 +51,9 @@ export function force_set_z_level_is_s() {
     z_level_is_s = true;
     c_level_skip = true;
 }
+export function force_unset_z_level_is_s() {
+    z_level_is_s = false;
+}
 export function force_unset_c_level_skip() {
     c_level_skip = false;
 }
@@ -220,6 +223,18 @@ export function parse_statement(j, response) {
                         }
                     }
                     break;
+                    case 'T': // 도표
+                        if (j == 0) {
+                            str += d_level[q_d++];
+                        }
+                        if (j == response.data.length - 1) { // 도표가 본문의 마지막에 위치해 있는 경우는 [잡병편 권10-부인(婦人)-추부인행년법] 밖에 없다
+                            scrape_flag = j;
+                            if (print_c_level) {
+                                str += c_level[q_c++];
+                                print_c_level = false;
+                            }
+                        }
+                        break;
             }
         }
         if (q_c == c_count_store) q_c = 0;
