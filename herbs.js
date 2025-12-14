@@ -25,7 +25,7 @@ async function herbs(i_, book_number) {
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/20/content?up_content_seq=" + i)
                         console.log("https://mediclassics.kr/books/8/volume/20/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/2025");
-                        common.parse_statement(i, response);
+                        common.parse_statement(response);
                     } else {
                         response = JSON.parse('{"data":[]}');
                         common.decrease_scrape_flag();
@@ -49,7 +49,7 @@ async function herbs(i_, book_number) {
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/21/content?up_content_seq=" + i)
                         console.log("https://mediclassics.kr/books/8/volume/21/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/1533");
-                        common.parse_statement(i, response);
+                        common.parse_statement(response);
                     } else {
                         response = JSON.parse('{"data":[]}');
                         common.decrease_scrape_flag();
@@ -73,7 +73,7 @@ async function herbs(i_, book_number) {
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/22/content?up_content_seq=" + i)
                         console.log("https://mediclassics.kr/books/8/volume/22/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/1587");
-                        common.parse_statement(i, response);
+                        common.parse_statement(response);
                     } else {
                         response = JSON.parse('{"data":[]}');
                         common.decrease_scrape_flag();

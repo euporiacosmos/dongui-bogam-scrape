@@ -19,7 +19,7 @@ async function external_body(i_, book_number) {
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/5/content?up_content_seq=" + i)
                         console.log("https://mediclassics.kr/books/8/volume/5/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/1505");
-                        common.parse_statement(i, response);
+                        common.parse_statement(response);
                     } else {
                         response = JSON.parse('{"data":[]}');
                         common.decrease_scrape_flag();
@@ -37,7 +37,7 @@ async function external_body(i_, book_number) {
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/6/content?up_content_seq=" + i)
                         console.log("https://mediclassics.kr/books/8/volume/6/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/1537");
-                        common.parse_statement(i, response);
+                        common.parse_statement(response);
                     } else {
                         response = JSON.parse('{"data":[]}');
                         common.decrease_scrape_flag();
@@ -60,7 +60,7 @@ async function external_body(i_, book_number) {
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/7/content?up_content_seq=" + i)
                         console.log("https://mediclassics.kr/books/8/volume/7/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/1924");
-                        common.parse_statement(i, response);
+                        common.parse_statement(response);
                     } else {
                         response = JSON.parse('{"data":[]}');
                         common.decrease_scrape_flag();
@@ -79,7 +79,7 @@ async function external_body(i_, book_number) {
                     if (common.get_scrape_flag() == 0) {
                         response = await axios.get("https://mediclassics.kr/books/8/volume/8/content?up_content_seq=" + i)
                         console.log("https://mediclassics.kr/books/8/volume/8/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/1431");
-                        common.parse_statement(i, response);
+                        common.parse_statement(response);
                     } else {
                         response = JSON.parse('{"data":[]}');
                         common.decrease_scrape_flag();

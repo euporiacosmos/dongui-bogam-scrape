@@ -20,7 +20,7 @@ async function acupuncture(i_) {
                 if (common.get_scrape_flag() == 0) {
                     response = await axios.get("https://mediclassics.kr/books/8/volume/23/content?up_content_seq=" + i)
                     console.log("https://mediclassics.kr/books/8/volume/23/content?up_content_seq=" + i + " scrape complete\nCurrent Progress: " + i + "/1755");
-                    common.parse_statement(i, response);
+                    common.parse_statement(response);
                 } else {
                     response = JSON.parse('{"data":[]}');
                     common.decrease_scrape_flag();

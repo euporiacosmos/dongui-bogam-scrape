@@ -76,14 +76,14 @@ export function set_skip_z() {
 export function set_print_c_level() {
     print_c_level = true;
 }
-export function parse_statement(j, response) {
+export function parse_statement(response) {
     if (response.data.length != 0) {
-        for (var j = 0; j < response.data.length; j++) {
-            switch(response.data[j].content_level) {
+        for (var i = 0; i < response.data.length; i++) {
+            switch(response.data[i].content_level) {
                 // 하위 목차인지 본문인지에 따라 다른 처리
                 case 'C': // C 레벨 컨텐츠: 하위 목차. 신형장부도를 제외한 모든 목차가 C 레벨이 있다
-                    c_level[c_count++] = "\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
-                    if (j == response.data.length - 1) {
+                    c_level[c_count++] = "\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
+                    if (i == response.data.length - 1) {
                         str += "\t" + b_level[q_b++] + "\n";
                         c_count_store = c_count;
                         c_count = 0;
@@ -95,55 +95,55 @@ export function parse_statement(j, response) {
                     }
                     break;
                 case 'D': // D 레벨 컨텐츠: 하위 목차의 하위 목차
-                    d_level[d_count++] = "\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
-                    if (j == response.data.length - 1) {
+                    d_level[d_count++] = "\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
+                    if (i == response.data.length - 1) {
                         d_count_store = d_count;
                         d_count = 0;
                     }
-                    if (j>0 && response.data[j-1].content_level == 'Z') {
+                    if (i>0 && response.data[i-1].content_level == 'Z') {
                         z_level_is_s = true;
                     }
-                    if (s_level_is_z && response.data[j-1].content_level == 'S' && response.data[j].content_level == 'D') {
-                        scrape_flag = j;
+                    if (s_level_is_z && response.data[i-1].content_level == 'S' && response.data[i].content_level == 'D') {
+                        scrape_flag = i;
                         is_d_level = true;
                     }
                     break;
                 case 'E': // E 레벨 컨텐츠: 하위 목차의 하위 목차의 하위 목차
-                    e_level[e_count++] = "\t\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
-                    if (j == response.data.length - 1) {
+                    e_level[e_count++] = "\t\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
+                    if (i == response.data.length - 1) {
                         e_count_store = e_count;
                         e_count = 0;
                     }
-                    if (j>0 && response.data[j-1].content_level == 'Z') {
+                    if (i>0 && response.data[i-1].content_level == 'Z') {
                         s_level_is_smaller = true;
                     }
                     break;
                 case 'P':
-                    if (j == 0) {
+                    if (i == 0) {
                         z_level_is_s ? str += d_level[q_d++] : str += c_level[q_c++];
                     }
-                    console.log("이미지: " + response.data[j].ko);
+                    console.log("이미지: " + response.data[i].ko);
                     break;
                 case 'X': // D 레벨 컨텐츠와 E 레벨 컨텐츠들 최상단에 있는 설명 본문
                     if (z_level_is_x) {
-                        x += "\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
+                        x += "\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
                     } else {
                         if (q_e == 0) { // D 레벨 컨텐츠 설명 본문
-                            if (j == 0) {
+                            if (i == 0) {
                                 str += c_level[q_c++];
                             }
-                            str += "\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
+                            str += "\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
                         } else { // E 레벨 컨텐츠 설명 본문
-                            if (j == 0) {
+                            if (i == 0) {
                                 str += d_level[q_d++];
                             }
-                            str += "\t\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
+                            str += "\t\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
                         }
                     }
                     break;
                 case 'S': // 더 이상 하위 목차가 없을 때의 본문
                     if (s_level_is_z) { // 탕액편에서, C 레벨 컨텐츠 하위 본문이 S 레벨인 경우
-                        if (j == 0 && !is_d_level) {
+                        if (i == 0 && !is_d_level) {
                             if (!skip_z) str += c_level[q_c++];
                             else {
                                 str += c_level[q_c++];
@@ -152,15 +152,15 @@ export function parse_statement(j, response) {
                                 skip_z = false;
                             }
                         }
-                        if (j == response.data.length - 1) {
-                            scrape_flag = j;
+                        if (i == response.data.length - 1) {
+                            scrape_flag = i;
                         }
                         if (is_d_level) {
-                            if (j == 0) str += d_level[q_d++];
-                            if (j == response.data.length - 1) scrape_flag = j;
-                            str += "\t\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
+                            if (i == 0) str += d_level[q_d++];
+                            if (i == response.data.length - 1) scrape_flag = i;
+                            str += "\t\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
                         } else {
-                            str += "\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
+                            str += "\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
                         }
                     } else {
                         if (s_level_is_smaller) { // E 레벨 컨텐츠 하위 본문
@@ -168,42 +168,42 @@ export function parse_statement(j, response) {
                                 str += d_level[q_d++];
                                 d_level_skip = false;
                             }
-                            if (j == 0) {
+                            if (i == 0) {
                                 str += e_level[q_e++];
                             }
-                            if (j == response.data.length - 1) {
-                                scrape_flag = j;
+                            if (i == response.data.length - 1) {
+                                scrape_flag = i;
                             }
-                            str += "\t\t\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
+                            str += "\t\t\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
                         } else { // D 레벨 컨텐츠 하위 본문
-                            if (j == 0) {
+                            if (i == 0) {
                                 str += d_level[q_d++];
                             }
-                            if (j == response.data.length - 1) {
-                                scrape_flag = j;
+                            if (i == response.data.length - 1) {
+                                scrape_flag = i;
                             }
-                            str += "\t\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
+                            str += "\t\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
                         }
                     }
                     break;
                 case 'Z': // 추가로 하위 목차가 있을 때의 본문, 그러나 C 레벨 컨텐츠 하위 본문일 때는 하위 목차가 없다
                     if (z_level_is_x) {
-                        x += "\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
+                        x += "\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
                     } else {
                         if (z_level_is_s) { // D 레벨 컨텐츠 하위 본문, E 레벨 컨텐츠들 최상단 설명 본문
                             if (c_level_skip) { // z_level_is_s를 강제로 true로 설정 시 새로운 C 레벨 컨텐츠를 진입하는지
                                 str += c_level[q_c++];
                                 c_level_skip = false;
                             }
-                            if (j == 0) {
+                            if (i == 0) {
                                 str += d_level[q_d++];
                             }
-                            if (j == response.data.length - 1) {
-                                scrape_flag = j;
+                            if (i == response.data.length - 1) {
+                                scrape_flag = i;
                             }
-                            str += "\t\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
+                            str += "\t\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
                         } else { // C 레벨 컨텐츠 하위 본문, D 레벨 컨텐츠들 최상단 설명 본문
-                            if (j == 0) {
+                            if (i == 0) {
                                 if (!skip_z) str += c_level[q_c++];
                                 else {
                                     str += c_level[q_c++];
@@ -212,9 +212,9 @@ export function parse_statement(j, response) {
                                     skip_z = false;
                                 }
                             }
-                            str += "\t\t\t" + remove_span_tag(response.data[j].ko).replace(/\n+/g, "") + "\n";
-                            if (j == response.data.length - 1) {
-                                scrape_flag = j;
+                            str += "\t\t\t" + remove_span_tag(response.data[i].ko).replace(/\n+/g, "") + "\n";
+                            if (i == response.data.length - 1) {
+                                scrape_flag = i;
                                 if (print_c_level) {
                                     str += c_level[q_c++];
                                     print_c_level = false;
@@ -224,11 +224,11 @@ export function parse_statement(j, response) {
                     }
                     break;
                     case 'T': // 도표
-                        if (j == 0) {
+                        if (i == 0) {
                             str += d_level[q_d++];
                         }
-                        if (j == response.data.length - 1) { // 도표가 본문의 마지막에 위치해 있는 경우는 [잡병편 권10-부인(婦人)-추부인행년법] 밖에 없다
-                            scrape_flag = j;
+                        if (i == response.data.length - 1) { // 도표가 본문의 마지막에 위치해 있는 경우는 [잡병편 권10-부인(婦人)-추부인행년법] 밖에 없다
+                            scrape_flag = i;
                             if (print_c_level) {
                                 str += c_level[q_c++];
                                 print_c_level = false;
